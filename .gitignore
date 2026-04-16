@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+jv_mill_finder/output/*
+!jv_mill_finder/output/.gitkeep
