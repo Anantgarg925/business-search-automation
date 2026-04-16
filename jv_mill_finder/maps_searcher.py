@@ -4,11 +4,16 @@ from pathlib import Path
 
 import googlemaps
 import pandas as pd
+from googlemaps.exceptions import ApiError, HTTPError, Timeout, TransportError
 from requests.exceptions import RequestException
 from tqdm import tqdm
 
-from config import API_DELAY_SECONDS, CACHE_FILE, PROGRESS_FILE, RAW_RESULTS_FILE, SAVE_EVERY_N_CITIES, SEARCH_QUERIES
-from utils import load_json, save_json
+try:
+    from .config import API_DELAY_SECONDS, CACHE_FILE, PROGRESS_FILE, RAW_RESULTS_FILE, SAVE_EVERY_N_CITIES, SEARCH_QUERIES
+    from .utils import load_json, save_json
+except ImportError:  # pragma: no cover
+    from config import API_DELAY_SECONDS, CACHE_FILE, PROGRESS_FILE, RAW_RESULTS_FILE, SAVE_EVERY_N_CITIES, SEARCH_QUERIES
+    from utils import load_json, save_json
 
 
 class QuotaExceededError(RuntimeError):
@@ -28,7 +33,7 @@ class GoogleMapsSearcher:
         for idx, delay in enumerate(delays, start=1):
             try:
                 return func(*args, **kwargs)
-            except Exception as exc:  # googlemaps throws generic Exception types
+            except (ApiError, HTTPError, Timeout, TransportError, RequestException) as exc:
                 last_error = exc
                 message = str(exc).upper()
                 if "OVER_QUERY_LIMIT" in message or "QUOTA" in message:

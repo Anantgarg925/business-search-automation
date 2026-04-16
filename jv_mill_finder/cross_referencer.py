@@ -3,8 +3,12 @@ import logging
 import pandas as pd
 from rapidfuzz import fuzz
 
-from config import FUZZY_MATCH_THRESHOLD
-from utils import extract_pincode, normalize_company_name
+try:
+    from .config import FUZZY_MATCH_THRESHOLD, MANUAL_REVIEW_THRESHOLD
+    from .utils import extract_pincode, normalize_company_name
+except ImportError:  # pragma: no cover
+    from config import FUZZY_MATCH_THRESHOLD, MANUAL_REVIEW_THRESHOLD
+    from utils import extract_pincode, normalize_company_name
 
 
 def cross_reference(google_df: pd.DataFrame, apeda_df: pd.DataFrame) -> pd.DataFrame:
@@ -56,10 +60,10 @@ def cross_reference(google_df: pd.DataFrame, apeda_df: pd.DataFrame) -> pd.DataF
                     match_method = "fuzzy"
                 else:
                     apeda_pin = str(best_match.get("pincode", ""))
-                    if pincode and apeda_pin and pincode == apeda_pin and best_score > 70:
+                    if pincode and apeda_pin and pincode == apeda_pin and best_score > MANUAL_REVIEW_THRESHOLD:
                         match_status = "ALREADY EXPORTING - SKIP"
                         match_method = "pincode+name"
-                    elif best_score >= 70:
+                    elif best_score >= MANUAL_REVIEW_THRESHOLD:
                         match_status = "VERIFY MANUALLY ⚠️"
                         match_method = "partial"
 

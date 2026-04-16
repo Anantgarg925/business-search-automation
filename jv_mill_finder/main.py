@@ -3,20 +3,36 @@ import logging
 import sys
 from pathlib import Path
 
-from apeda_loader import load_and_clean_apeda
-from config import (
-    APEDA_CSV_FILES,
-    ERROR_LOG_FILE,
-    GOOGLE_MAPS_API_KEY,
-    OUTPUT_FILE,
-    OUTREACH_FILE,
-    TARGET_CITIES,
-)
-from cross_referencer import cross_reference
-from excel_generator import generate_excel
-from maps_searcher import GoogleMapsSearcher, QuotaExceededError
-from outreach_generator import generate_outreach_file
-from scorer import score_targets
+try:
+    from .apeda_loader import load_and_clean_apeda
+    from .config import (
+        APEDA_CSV_FILES,
+        ERROR_LOG_FILE,
+        GOOGLE_MAPS_API_KEY,
+        OUTPUT_FILE,
+        OUTREACH_FILE,
+        TARGET_CITIES,
+    )
+    from .cross_referencer import cross_reference
+    from .excel_generator import generate_excel
+    from .maps_searcher import GoogleMapsSearcher, QuotaExceededError
+    from .outreach_generator import generate_outreach_file
+    from .scorer import score_targets
+except ImportError:  # pragma: no cover
+    from apeda_loader import load_and_clean_apeda
+    from config import (
+        APEDA_CSV_FILES,
+        ERROR_LOG_FILE,
+        GOOGLE_MAPS_API_KEY,
+        OUTPUT_FILE,
+        OUTREACH_FILE,
+        TARGET_CITIES,
+    )
+    from cross_referencer import cross_reference
+    from excel_generator import generate_excel
+    from maps_searcher import GoogleMapsSearcher, QuotaExceededError
+    from outreach_generator import generate_outreach_file
+    from scorer import score_targets
 
 
 def setup_logging() -> None:

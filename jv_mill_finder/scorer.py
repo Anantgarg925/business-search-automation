@@ -1,6 +1,9 @@
 import pandas as pd
 
-from utils import clean_phone_number, parse_types
+try:
+    from .utils import clean_phone_number, parse_types
+except ImportError:  # pragma: no cover
+    from utils import clean_phone_number, parse_types
 
 
 PRIME_BELT = {"karnal", "kaithal", "taraori", "gharaunda"}

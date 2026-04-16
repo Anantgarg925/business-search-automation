@@ -70,6 +70,12 @@ def clean_phone_number(phone_number: str) -> str:
     return digits
 
 
+def get_google_maps_url(row: Any) -> str:
+    maps_url = row.get("maps_url", "")
+    place_id = row.get("place_id", "")
+    return maps_url or (f"https://www.google.com/maps/place/?q=place_id:{place_id}" if place_id else "")
+
+
 def parse_types(value: Any) -> list[str]:
     if isinstance(value, list):
         return value

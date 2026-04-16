@@ -4,8 +4,12 @@ import pandas as pd
 from openpyxl import Workbook
 from openpyxl.styles import Alignment, Font, PatternFill
 
-from config import JV_TARGET_MIN_SCORE
-from utils import clean_phone_number
+try:
+    from .config import JV_TARGET_MIN_SCORE
+    from .utils import clean_phone_number, get_google_maps_url
+except ImportError:  # pragma: no cover
+    from config import JV_TARGET_MIN_SCORE
+    from utils import clean_phone_number, get_google_maps_url
 
 
 HEADERS = [
@@ -25,34 +29,10 @@ HEADERS = [
 ]
 
 
-def _to_output_rows(df: pd.DataFrame) -> list[list]:
-    rows = []
-    for idx, (_, row) in enumerate(df.iterrows(), start=1):
-        phone = clean_phone_number(str(row.get("phone_number", "")))
-        wa_link = f"https://wa.me/91{phone}" if phone else ""
-        maps_link = row.get("maps_url") or (f"https://www.google.com/maps/place/?q=place_id:{row.get('place_id', '')}" if row.get("place_id") else "")
-        rows.append([
-            idx,
-            row.get("name", ""),
-            row.get("city", ""),
-            row.get("state", ""),
-            phone,
-            wa_link,
-            row.get("website", ""),
-            row.get("rating", 0),
-            row.get("user_ratings_total", 0),
-            row.get("jv_score", 0),
-            row.get("formatted_address", ""),
-            maps_link,
-            "",
-        ])
-    return rows
-
-
 def _row_to_output(rank: int, row: pd.Series) -> list:
     phone = clean_phone_number(str(row.get("phone_number", "")))
     wa_link = f"https://wa.me/91{phone}" if phone else ""
-    maps_link = row.get("maps_url") or (f"https://www.google.com/maps/place/?q=place_id:{row.get('place_id', '')}" if row.get("place_id") else "")
+    maps_link = get_google_maps_url(row)
     return [
         rank,
         row.get("name", ""),
@@ -85,7 +65,7 @@ def _style_sheet(ws):
 
 def _populate_sheet(ws, df: pd.DataFrame, color_scores: bool = False):
     ws.append(HEADERS)
-    for row in _to_output_rows(df):
+    for row in [_row_to_output(idx, r) for idx, (_, r) in enumerate(df.iterrows(), start=1)]:
         ws.append(row)
 
     _style_sheet(ws)

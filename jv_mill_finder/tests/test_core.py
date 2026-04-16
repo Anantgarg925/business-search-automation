@@ -2,9 +2,9 @@ import unittest
 
 import pandas as pd
 
-from cross_referencer import cross_reference
-from scorer import calculate_jv_score
-from utils import normalize_company_name
+from jv_mill_finder.cross_referencer import cross_reference
+from jv_mill_finder.scorer import calculate_jv_score
+from jv_mill_finder.utils import normalize_company_name
 
 
 class CoreLogicTests(unittest.TestCase):
@@ -50,6 +50,20 @@ class CoreLogicTests(unittest.TestCase):
             }
         )
         self.assertGreaterEqual(calculate_jv_score(row), 90)
+
+    def test_score_calculation_low_signal(self):
+        row = pd.Series(
+            {
+                "phone_number": "",
+                "website": "",
+                "rating": 3.2,
+                "user_ratings_total": 8,
+                "city": "Meerut",
+                "types": ["point_of_interest"],
+                "opening_hours": False,
+            }
+        )
+        self.assertEqual(calculate_jv_score(row), 5)
 
 
 if __name__ == "__main__":

@@ -2,7 +2,10 @@ from pathlib import Path
 
 import pandas as pd
 
-from utils import clean_phone_number
+try:
+    from .utils import clean_phone_number, get_google_maps_url
+except ImportError:  # pragma: no cover
+    from utils import clean_phone_number, get_google_maps_url
 
 
 HINDI_TEMPLATE = (
@@ -28,7 +31,7 @@ def generate_outreach_file(df: pd.DataFrame, output_path: str) -> None:
     for idx, (_, row) in enumerate(top.iterrows(), start=1):
         phone = clean_phone_number(str(row.get("phone_number", "")))
         wa_link = f"https://wa.me/91{phone}" if phone else ""
-        maps_url = row.get("maps_url") or (f"https://www.google.com/maps/place/?q=place_id:{row.get('place_id', '')}" if row.get("place_id") else "")
+        maps_url = get_google_maps_url(row)
         lines.extend(
             [
                 f"--- MILL {idx}: {row.get('name', '')} ---",

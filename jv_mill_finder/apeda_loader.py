@@ -3,8 +3,12 @@ from pathlib import Path
 
 import pandas as pd
 
-from config import APEDA_CLEANED_FILE, TARGET_CITIES
-from utils import extract_city, extract_pincode, normalize_company_name
+try:
+    from .config import APEDA_CLEANED_FILE, TARGET_CITIES
+    from .utils import extract_city, extract_pincode, normalize_company_name
+except ImportError:  # pragma: no cover
+    from config import APEDA_CLEANED_FILE, TARGET_CITIES
+    from utils import extract_city, extract_pincode, normalize_company_name
 
 
 EXPECTED_COLUMNS = ["S.No.", "Exporter Name", "Address", "E-Mail", "State", "Exporter Type"]
